@@ -1,13 +1,37 @@
-<!<!doctype html>
+{% load staticfiles %}
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <meta charset='UTF-8'>
+
+    <title>{% block title %}{% endblock title %} </title>
+
+
+   <link rel="stylesheet" href="{% static 'style/css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'style/css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'style/css/detail.css' %}">
+    <link rel="stylesheet" href="{% static 'style/css/carts.css'%}">
+    <link rel="stylesheet" href="{% static 'style/css/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'style/css/mygxin.css' %}">
+
+     <script src="{% static 'style/js/carts.js' %}"></script>
+    <script src="{% static 'style/js/jquery.min.js' %}"></script>
+
 </head>
 <body>
-     
+{% include 'head.html' %}
+
+{% include 'search.html' %}
+
+{% include 'menu-nav.html' %}
+{% block  goods%}
+{% endblock goods %}
+
+{% include 'foot.html' %}
+    <script>
+    $('#pager').css({'text-align':'center','font-size':'16px','overflow':'hidden'})
+    $('#pager a').css({'display':'inline-block','padding':'5px','margin':'5px'})
+
+    </script>
 </body>
 </html>

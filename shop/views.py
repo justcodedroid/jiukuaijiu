@@ -5,4 +5,4 @@ from django.http.response import HttpResponse
 
 class IndexView(View):
     def get(self,request):
-        return HttpResponse('通用的')
+        return render(request, 'category.html')
