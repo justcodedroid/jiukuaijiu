@@ -129,6 +129,8 @@ class ShopCategory(models.Model):
     class Meta:
         managed = False
         db_table = 'shop_category'
+    def __str__(self):
+        return u'%s'%self.cname
 
 
 class ShopColor(models.Model):
