@@ -1,10 +1,24 @@
+{% load staticfiles %}
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
+<!-- saved from url=(0033)http://127.0.0.1:8000/?category=2 -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>商城</title>
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+    <link rel="stylesheet" href="{% static 'css/carts.css' %}">
+    <link rel="stylesheet" href="{% static 'css/reset.css' %}">
+    <link rel="stylesheet" href="{% static 'css/mygxin.css' %}">
+
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/carts.js' %}"></script>
 </head>
 <body>
-$END$
-</body>
-</html>
+{% include 'head.html' %}
+{% block content %}{% endblock content %}
+    <script>
+    $('#pager').css({'text-align':'center','font-size':'16px','overflow':'hidden'})
+    $('#pager a').css({'display':'inline-block','padding':'5px','margin':'5px'})
+
+    </script>
+</body></html>

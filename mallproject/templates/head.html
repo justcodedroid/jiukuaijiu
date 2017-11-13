@@ -1,10 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% load staticfiles %}
+<!--导航-->
+<div class="head">
+    <div class="head-in">
+        <ul class="options">
+            <li class="sub"><a href="http://127.0.0.1:8000/?category=2#">我的订单</a></li>
+            <li class="sub"><a href="http://127.0.0.1:8000/?category=2#">商家中心</a></li>
+            <li class="sub"><a href="http://127.0.0.1:8000/?category=2#">客户服务</a></li>
+        </ul>
+        <div class="register"><a href="http://127.0.0.1:8000/?category=2#">免费注册</a></div>
+        <div class="sign"><a href="http://127.0.0.1:8000/login/">登录</a></div>
+    </div>
+</div>
+<!--搜索-->
+<div class="search">
+    <ul class="items">
+        <li class="item">
+            <a href="http://127.0.0.1:8000/?category=2#">
+                <img src="{% static 'img/search/1_09.png' %}">
+                <p>10:00开抢</p>
+            </a>
+        </li>
+        <li class="item">
+            <a href="http://127.0.0.1:8000/?category=2#">
+                <img src="{% static 'img/search/1_11.png' %}">
+                <p>买手砍价</p>
+            </a>
+        </li>
+        <li class="item">
+            <a href="http://127.0.0.1:8000/?category=2#">
+                <img src="{% static 'img/search/1_13.png' %}">
+                <p>验货质检</p>
+            </a>
+        </li>
+    </ul>
+    <div class="input">
+        <input type="" name="" value="请输入想找的宝贝">
+        <img src="{% static 'img/search/1_06.png' %}">
+    </div>
+</div>
