@@ -14,7 +14,7 @@
             {% for good in goods %}
                 <div class="good">
                     <a href="#">
-                        <img src="/static/media/{{ good.img  }}" width="285px" height="285px">
+                        <img src="{{ MEDIA_URL }}{{ good.img  }}" width="285px" height="285px">
                         <p class="name">{{ good.gname }}</p>
                         <div class="price">
                             <i>￥</i>
@@ -30,7 +30,21 @@
         </div>
     </div>
 
-<div id="pager" style="text-align: center; font-size: 16px; overflow: hidden;">
-    	 <a href="http://127.0.0.1:8000/?category=2&amp;page=2" style="display: inline-block; padding: 5px; margin: 5px;">下一页</a>
-    </div>
+<div id="pager" >
+        {% if page.has_previous %}
+        <a href="/?category={{ category_id }}&page={{page.previous_page_number}}">上一页</a>
+        {% endif %}
+        {% if page.has_next %}
+            <a href="/?category={{ category_id }}&page={{page.next_page_number}}">下一页</a>
+        {% endif %}
+
+
+</div>
 {% endblock main %}
+{% block footer %}
+    <script>
+    $('#pager').css({'text-align':'center','font-size':'16px','overflow':'hidden','margin-top':'10px'})
+    $('#pager a').css({'display':'inline-block','padding':'5px','margin':'5px'})
+
+    </script>
+{% endblock footer%}
