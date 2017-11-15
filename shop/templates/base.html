@@ -23,17 +23,18 @@
 
 {% include 'search.html' %}
 
-{% include 'menu-nav.html' %}
 {% block detail %}
 {% endblock detail %}
 {% block  goods%}
 {% endblock goods %}
+{% block recomment %}
 
+{% endblock recomment%}
 {% include 'foot.html' %}
-    <script>
-    $('#pager').css({'text-align':'center','font-size':'16px','overflow':'hidden'})
-    $('#pager a').css({'display':'inline-block','padding':'5px','margin':'5px'})
 
-    </script>
+{% block js %}
+
+{% endblock js %}
+
 </body>
 </html>

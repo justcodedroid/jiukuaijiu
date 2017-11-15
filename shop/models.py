@@ -10,204 +10,130 @@ from __future__ import unicode_literals
 from django.db import models
 
 
-class AuthGroup(models.Model):
-    name = models.CharField(unique=True, max_length=80)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_group'
-
-
-class AuthGroupPermissions(models.Model):
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-    permission = models.ForeignKey('AuthPermission', models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_group_permissions'
-        unique_together = (('group', 'permission'),)
-
-
-class AuthPermission(models.Model):
-    name = models.CharField(max_length=255)
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING)
-    codename = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_permission'
-        unique_together = (('content_type', 'codename'),)
-
-
-class AuthUser(models.Model):
-    password = models.CharField(max_length=128)
-    last_login = models.DateTimeField(blank=True, null=True)
-    is_superuser = models.IntegerField()
-    username = models.CharField(unique=True, max_length=150)
-    first_name = models.CharField(max_length=30)
-    last_name = models.CharField(max_length=30)
-    email = models.CharField(max_length=254)
-    is_staff = models.IntegerField()
-    is_active = models.IntegerField()
-    date_joined = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user'
-
-    def __str__(self):
-        return u'%s'%(self.username)
-
-
-class AuthUserGroups(models.Model):
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    group = models.ForeignKey(AuthGroup, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user_groups'
-        unique_together = (('user', 'group'),)
-
-
-class AuthUserUserPermissions(models.Model):
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    permission = models.ForeignKey(AuthPermission, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'auth_user_user_permissions'
-        unique_together = (('user', 'permission'),)
-
-
-class DjangoAdminLog(models.Model):
-    action_time = models.DateTimeField()
-    object_id = models.TextField(blank=True, null=True)
-    object_repr = models.CharField(max_length=200)
-    action_flag = models.SmallIntegerField()
-    change_message = models.TextField()
-    content_type = models.ForeignKey('DjangoContentType', models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-
-    class Meta:
-        managed = False
-        db_table = 'django_admin_log'
-
-
-class DjangoContentType(models.Model):
-    app_label = models.CharField(max_length=100)
-    model = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'django_content_type'
-        unique_together = (('app_label', 'model'),)
-
-
-class DjangoMigrations(models.Model):
-    app = models.CharField(max_length=255)
-    name = models.CharField(max_length=255)
-    applied = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_migrations'
-
-
-class DjangoSession(models.Model):
-    session_key = models.CharField(primary_key=True, max_length=40)
-    session_data = models.TextField()
-    expire_date = models.DateTimeField()
-
-    class Meta:
-        managed = False
-        db_table = 'django_session'
-
-
-class ShopCategory(models.Model):
+class Category(models.Model):
     cname = models.CharField(unique=True, max_length=255)
 
     class Meta:
         managed = False
         db_table = 'shop_category'
+        # 排序
+        ordering = ['id']
     def __str__(self):
         return u'%s'%self.cname
 
-
-class ShopColor(models.Model):
-    name = models.CharField(max_length=20)
-    value = models.CharField(max_length=100)
-
-    class Meta:
-        managed = False
-        db_table = 'shop_color'
-
-
-class ShopGoods(models.Model):
+class Goods(models.Model):
     gname = models.CharField(max_length=255)
     gdesc = models.CharField(max_length=1024, blank=True, null=True)
     gprice = models.DecimalField(max_digits=10, decimal_places=2)
     goldprice = models.DecimalField(max_digits=10, decimal_places=2)
-    categoryid = models.ForeignKey(ShopCategory, models.DO_NOTHING, db_column='categoryId_id')  # Field name made lowercase.
+    categoryid = models.ForeignKey(Category, models.DO_NOTHING, db_column='categoryId_id')
 
+    # 商品图片处理
+    def img(self):
+        return self.store_set.first().color.value
+    # 商品展示页图片
+    def colors(self):
+        stores = self.store_set.all()
+        colors = []
+        for store in stores:
+            # 去重
+            color = store.color
+            if color not in colors:
+                colors.append(color)
+        return colors
+    # 大小样式
+    # def sizes(self):
+    #     stores = self.store_set.all()
+    #     sizes = []
+    #     for store in stores:
+    #         # 去重
+    #         size = store.size
+    #         if size not in sizes:
+    #             sizes.append(size)
+    #     return sizes
     class Meta:
         managed = False
         db_table = 'shop_goods'
+        ordering = ['id']
+    def __str__(self):
+        return u'%s'%(self.gname)
 
 
-class ShopGoodsdetails(models.Model):
-    value = models.CharField(max_length=100)
-    goodsid = models.ForeignKey(ShopGoods, models.DO_NOTHING, db_column='goodsId_id')  # Field name made lowercase.
+class Goodsdetails(models.Model):
+    value = models.ImageField()
+    goodsid = models.ForeignKey(Goods, models.DO_NOTHING, db_column='goodsId_id')  # Field name made lowercase.
 
     class Meta:
         managed = False
         db_table = 'shop_goodsdetails'
+        ordering = ['id']
+    def __str__(self):
+        return u"%s"%self.goodsid
 
 
-class ShopOrder(models.Model):
-    id = models.CharField(primary_key=True, max_length=32)
-    desc = models.IntegerField()
-    created = models.DateTimeField()
-    content = models.TextField()
-    user = models.ForeignKey('ShopUser', models.DO_NOTHING)
+class Color(models.Model):
+    name = models.CharField(max_length=20)
+    value = models.ImageField(upload_to='color')
 
     class Meta:
         managed = False
-        db_table = 'shop_order'
+        db_table = 'shop_color'
+    def __str__(self):
+        return u'%s'%self.name
 
 
-class ShopSize(models.Model):
+
+
+# class Order(models.Model):
+#     id = models.CharField(primary_key=True, max_length=32)
+#     desc = models.IntegerField()
+#     created = models.DateTimeField()
+#     content = models.TextField()
+#     user = models.ForeignKey('User', models.DO_NOTHING)
+#
+#     class Meta:
+#         managed = False
+#         db_table = 'shop_order'
+
+
+class Size(models.Model):
     value = models.CharField(max_length=255)
     name = models.CharField(max_length=20)
 
     class Meta:
         managed = False
         db_table = 'shop_size'
+    def __str__(self):
+        return u'%s'%self.name
 
 
-class ShopStore(models.Model):
+# 库存表
+class Store(models.Model):
     count = models.IntegerField()
-    color = models.ForeignKey(ShopColor, models.DO_NOTHING)
-    goods = models.ForeignKey(ShopGoods, models.DO_NOTHING)
+    color = models.ForeignKey(Color, models.DO_NOTHING)
+    goods = models.ForeignKey(Goods, models.DO_NOTHING)
 
     class Meta:
         managed = False
         db_table = 'shop_store'
+    def __str__(self):
+        return u'%s'%self.goods.gname
 
-
-class ShopStoreSize(models.Model):
-    store = models.ForeignKey(ShopStore, models.DO_NOTHING)
-    size = models.ForeignKey(ShopSize, models.DO_NOTHING)
+class StoreSize(models.Model):
+    store = models.ForeignKey(Store, models.DO_NOTHING)
+    size = models.ForeignKey(Size, models.DO_NOTHING)
 
     class Meta:
         managed = False
         db_table = 'shop_store_size'
         unique_together = (('store', 'size'),)
+#
+#
+# class User(models.Model):
+#     user = models.CharField(max_length=254)
+#     password = models.CharField(max_length=255)
+#
+#     class Meta:
+#         managed = False
+#         db_table = 'shop_user'
 
-
-class ShopUser(models.Model):
-    user = models.CharField(max_length=254)
-    password = models.CharField(max_length=255)
-
-    class Meta:
-        managed = False
-        db_table = 'shop_user'

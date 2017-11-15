@@ -1,20 +1,20 @@
 {% extends 'base.html' %}
-
+{% load staticfiles %}
 {% block detail %}
-<div class="detail-body" goodsid="25">
+<div class="detail-body" goodsid="{{ goods.id }}">
         <!-- 面包屑 -->
         <div class="bread">
             <ul class="bread-content">
                 <li class="bread-item">
-                    <a href="">首页</a>&gt;
+                    <a href="/">首页</a>&gt;
                 </li>
 
                 <li class="bread-item">
-                    <a href="">女装</a>&gt;
+                    <a href="/?category={{goods.categoryid.id}}">{{ goods.categoryid}}</a>&gt;
                 </li>
 
                 <li class="bread-item">
-                    <a href="javascript:void(0);">秋时尚印花两件套装裙</a>
+                    <a href="javascript:void(0);">{{ goods.gname }}</a>
                 </li>
             </ul>
         </div>
@@ -26,25 +26,23 @@
 
             </div>
             <div class="detail-con-right">
-                <h3>秋装时尚印花复古时尚休闲两件套装裙子</h3>
+                <h3>{{ goods.gdesc }}</h3>
                 <div class="price">
                     <i>￥</i>
-                    <p>35.00</p>
-                    <s>￥100.00</s>
+                    <p>{{ goods.gprice }}</p>
+                    <s>{{ goods.goldprice }}</s>
                 </div>
 
             <div class="line"></div>
             <div class="color">
                 <p class="p-item">颜色：</p>
                 <ul class="MinImgList">
-
-                        <li class="MinImg active" colorid="60">
-                            <img width="30" height="30" src="">
+                        {% for color in colors %}
+                            <li class="MinImg active" colorid="{{ color.id }}">
+                            <img width="30" height="30" src="{{ MEDIA_URL }}{{ color.value }}">
                         </li>
+                        {% endfor %}
 
-                        <li class="MinImg " colorid="61">
-                            <img width="30" height="30" src="">
-                        </li>
 
                 </ul>
             </div>
@@ -53,14 +51,10 @@
                         尺码：
                     </p>
                     <ul class="size-list">
+                        {% for size in sizes %}
+                            <li class="size-item active" sizeid="{{ size.id }}">{{ size}}</li>
+                        {% endfor %}
 
-                            <li class="size-item active" sizeid="6">S</li>
-
-                            <li class="size-item " sizeid="8">M</li>
-
-                            <li class="size-item " sizeid="9">L</li>
-
-                            <li class="size-item " sizeid="10">XL</li>
 
                     </ul>
                 </div>
@@ -93,36 +87,110 @@
         <div class="zhanshi-model">
             <p>参数规格</p>
             <div class="line"></div>
-            <img alt="" src="">
+            <img alt="" src="{{ MEDIA_URL}}03.png">
         </div>
         <div class="zhanshi-model">
             <p>整体款式</p>
             <div class="line"></div>
-            <img alt="" src="">
+            <img alt="" src="{{ MEDIA_URL }}06.png">
         </div>
         <div class="zhanshi-model">
             <p>模特实拍</p>
             <div class="line"></div>
-
-                <img alt="" src="">
-
-                <img alt="" src="">
-
-                <img alt="" src="">
-
-                <img alt="" src="">
-
-                <img alt="" src="">
-
-                <img alt="" src="">
-
-                <img alt="" src="">
-
-                <img alt="" src="">
-
+                {% for detail in details %}
+                     <img alt="" src="{{ MEDIA_URL }}{{ detail.value }}">
+                {% endfor %}
             </div>
         </div>
     </div>
 </div>
 
 {% endblock detail %}
+
+{% block recomment %}
+    <div class="goods-model" style="margin-right: -18px;text-align: center">
+        <img style="position: relative;left: -10px;top: 10px" src="{% static 'style/img/recommend.png' %}">
+
+        <div class="goods-content">
+
+                <div class="good">
+                    <a href="http://127.0.0.1:8000/details?goodsId=5">
+                        <img width="285" height="285" src="">
+                        <p class="name">中长款双面呢毛呢外套</p>
+                        <div class="price">
+                            <i>￥</i>
+                            <p class="big">33.00</p>
+                            <s>￥256.00</s>
+                        </div>
+                        <div class="sale">
+                            特卖
+                        </div>
+                    </a>
+                </div>
+
+
+
+
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    <script>
+        $(window).load(function () {
+             $('.MinImg').siblings().removeClass('active');
+            $('.MinImg:first').addClass('active');
+             var src = $('.MinImg').getElementsByTagName('img')[0].src;
+            $('.detail-con-left>img').attr('src', src);
+        });
+        $('.MinImg').click(function () {
+            $(this).siblings().removeClass('active');
+            $(this).addClass('active');
+            var src = this.getElementsByTagName('img')[0].src;
+            $('.detail-con-left>img').attr('src', src);
+            var goodsId = $('.detail-body').attr('goodsId');
+            var colorId = $(this).attr('colorId');
+            var data = 'goodsId=' + goodsId + "&colorId=" + colorId;
+            $.post('getsize/', data, function (data, status) {
+                if (status == 'success') {
+
+                    $('.size-list').empty()
+                    $.each($.parseJSON(data), function (index, content) {
+                        item = document.createElement('li');
+                        $(item).addClass('size-item');
+                        $(item).attr('sizeId', content.pk)
+                        $(item).append(document.createTextNode(content.fields.value))
+                        $('.size-list').append(item);
+                        if (index == 0) {
+                            $(item).addClass('active');
+                        }
+
+                    });
+                    $('.size-item').click(function () {
+                        $(this).siblings().removeClass('active');
+                        $(this).addClass('active');
+                    });
+                }
+            })
+        })
+        $('.size-item').click(function () {
+            $(this).siblings().removeClass('active');
+            $(this).addClass('active');
+        });
+        $('.jian').click(function () {
+            if ($('.num input').val() <= 1)
+                return
+            $('.num input').val($('.num input').val() - 1)
+        });
+        $('.jia').click(function () {
+            $('.num input').val(parseInt($('.num input').val()) + 1)
+        });
+
+        function goCart() {
+            $('.male').attr('target', '_blank')
+            $('.male').attr('href', '/cart/?goodsId=' + $('.detail-body').attr('goodsId') + '&colorId=' + $('.MinImgList .active').attr('colorId') + '&sizeId=' + $('.size-list .active').attr('sizeId') + '&count=' + $('.num input').val())
+            setTimeout(function () {
+                $('.male').attr('href', 'javascript:void(0);')
+            }, 10)
+        }
+    </script>
+{% endblock %}

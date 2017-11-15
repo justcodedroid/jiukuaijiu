@@ -256,6 +256,7 @@ a {
 
 /*商品卡片*/
 .goods-model, .detail-body{
+    min-height:1000px;
     background-color: #f6f6f6;
 }
 .goods-content{
@@ -298,7 +299,8 @@ a {
     color: #ff464e;
 }
 .good .price s{
-    margin-top: 17px;
+    margin-top: -12px;
+    margin-left: 88px;
     color: #bbc6dd;
 }
 .good .sale{

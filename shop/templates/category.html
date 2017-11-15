@@ -4,27 +4,71 @@
 商品页面
 {% endblock title %}
 {% block  goods%}
+
+    <div class="classes">
+        <ul class="classes-items">
+
+               {% for category in categorys %}
+                    <li class="items {% if category.id == category_id %} active {% endif %} "><a href='/?category={{ category.id }}'>{{ category.cname }}</a></li>
+               {% endfor %}
+
+
+        </ul>
+    </div>
+
+
     <div class="goods-model">
         <div class="goods-content">
 
-                <div class="good">
-                    <a href=" ">
-                        <img width="285" height="285" src="">
-                        <p class="name">宽松短款牛仔外套</p>
+                {% for good in goods %}
+                    <div class="good">
+                    <a href=" /goods/?goodid={{ good.id }}">
+                        <img width="285" height="285" src="{{ MEDIA_URL }}{{ good.img }}">
+                        <p class="name">{{ good.gname }}</p>
                         <div class="price">
                             <i>￥</i>
-                            <p class="big">79.00</p>
-                            <s>￥259.00</s>
+                            <p class="big">{{ good.gprice }}</p>
+                            <s>{{ good.goldprice }}</s>
                         </div>
                         <div class="sale">
                             特卖
                         </div>
                     </a>
                 </div>
+                {% endfor %}
+
         </div>
     </div>
 
-    <div id="pager" style="text-align: center; font-size: 16px; overflow: hidden;">
-    	 <a href="" style="display: inline-block; padding: 5px; margin: 5px;">下一页</a>
+    <div id="pager">
+        {% if page.has_previous %}
+            <a href="/?category={{ category_id }}&page={{ page.previous_page_number }}" >上一页</a>
+        {% endif %}
+    	 {% if page.has_next %}
+            <a href="/?category={{ category_id }}&page={{ page.next_page_number }}" >下一页</a>
+        {% endif %}
     </div>
 {% endblock goods %}
+{% block js %}
+     <script>
+    $('#pager').css({'text-align':'center','font-size':'16px','overflow':'hidden'})
+    $('#pager a').css({'display':'inline-block','padding':'5px','margin':'5px'})
+    </script>
+{% endblock js %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
