@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block login %}
+    <div class="login-body">
+        <div class="login-card">
+            <div class="login-top">
+                <h3>老用户登录</h3>
+                <h5>尊敬的用户，欢迎您回来！</h5>
+                <h4>还没账号？ <a href="/login/register.html">立即去注册</a></h4>
+            </div>
+            <div class="login-bottom">
+                <div class="login-input-box" >
+                    <form action="/login/" method="post">
+                            {% csrf_token %}
+                            <input class="login-admin active" type="text" placeholder="用户名或邮箱登录" name="uname">
+                            <input class="login-password" type="password" name="upassword">
+                            <button class="login-btn" style="color: white;text-decoration: none;cursor: pointer">登录</button>
+                    </form>
+
+                </div>
+                <div class="login-img">
+                    <img alt="" src="{% static 'style/img/login_05.png' %}">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock login %}

@@ -18,6 +18,8 @@ from django.contrib import admin
 from shop import urls
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^cart/', include('cart.urls')),
+    url(r'^login/',include('login.urls')),
     url(r'^', include('shop.urls')),
 ]
 # 后台文件显示,本地测试使用

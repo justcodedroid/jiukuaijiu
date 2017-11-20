@@ -10,12 +10,15 @@
    <link rel="stylesheet" href="{% static 'style/css/login.css' %}">
     <link rel="stylesheet" href="{% static 'style/css/index.css' %}">
     <link rel="stylesheet" href="{% static 'style/css/detail.css' %}">
-    <link rel="stylesheet" href="{% static 'style/css/carts.css'%}">
+    <link rel="stylesheet" href="{% static 'style/css/carts.css' %}">
     <link rel="stylesheet" href="{% static 'style/css/reset.css' %}">
     <link rel="stylesheet" href="{% static 'style/css/mygxin.css' %}">
 
+        <script src="{% static 'style/js/jquery.min.js' %}"></script>
+<!--
      <script src="{% static 'style/js/carts.js' %}"></script>
-    <script src="{% static 'style/js/jquery.min.js' %}"></script>
+-->
+
 
 </head>
 <body>
@@ -28,13 +31,17 @@
 {% block  goods%}
 {% endblock goods %}
 {% block recomment %}
-
 {% endblock recomment%}
+{% block cart %}
+{% endblock cart%}
+{% block login %}
+{% endblock login%}
 {% include 'foot.html' %}
 
+
+
+</body>
 {% block js %}
 
 {% endblock js %}
-
-</body>
 </html>

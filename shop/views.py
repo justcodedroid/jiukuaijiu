@@ -43,12 +43,19 @@ class Goodsdetails_view(BaseView):
                     sizeids.append(size_id.size)
         return sizeids
 
-    # def GoodsCookie(self,request):
-    #     response = HttpResponse()
-    #     response.set_cookie('goodsid',self.goodid)
 
+    def handle_request_cookie(self,request):
+        # 获得cookie
+        self.historys = eval(request.COOKIES.get('historys','[]'))
 
+    def handle_response_cookie(self,response):
+        # 填写用户浏览的商品id,存贮方式[id,id,id]
+        # 首先判断商品id是否存在
+        if self.goodid not in self.historys:
+            self.historys.append(self.goodid)
 
+        # 浏览器只存字符,不存对象
+        response.set_cookie('historys',str(self.historys))
     def get_context(self,request):
         goodid = int(request.GET.get('goodid', Goods.objects.first().id))
         self.goodid = goodid
@@ -57,7 +64,10 @@ class Goodsdetails_view(BaseView):
         context['colors'] = Goods.colors(context['goods'])
         context['sizes'] = self.get_size(request)
         context['details'] = Goodsdetails.objects.filter(goodsid_id=goodid)
-
+        recomment_goods = []
+        for history_goodid in self.historys:
+            recomment_goods.append(Goods.objects.get(id = history_goodid))
+        context['recomment_goods'] = recomment_goods[:4]
         return context
 
 

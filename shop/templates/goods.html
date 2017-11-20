@@ -22,7 +22,7 @@
         <!-- detail-content -->
         <div class="detail-content">
             <div class="detail-con-left">
-                <img src="">
+                <img src="{{ MEDIA_URL }}{{ goods.img }}">
 
             </div>
             <div class="detail-con-right">
@@ -38,7 +38,7 @@
                 <p class="p-item">颜色：</p>
                 <ul class="MinImgList">
                         {% for color in colors %}
-                            <li class="MinImg active" colorid="{{ color.id }}">
+                            <li class="MinImg {% if forloop.first %} active {% endif %}" colorid="{{ color.id }}">
                             <img width="30" height="30" src="{{ MEDIA_URL }}{{ color.value }}">
                         </li>
                         {% endfor %}
@@ -52,7 +52,7 @@
                     </p>
                     <ul class="size-list">
                         {% for size in sizes %}
-                            <li class="size-item active" sizeid="{{ size.id }}">{{ size}}</li>
+                            <li class="size-item {% if forloop.first %} active {% endif %}" sizeid="{{ size.id }}">{{ size}}</li>
                         {% endfor %}
 
 
@@ -63,10 +63,17 @@
                         数量：
                     </p>
                     <div class="jian">-</div>
-                    <input type="" value="1">
+                    <input type="number" readonly value="1">
                     <div class="jia">+</div>
                 </div>
-                <a class="male" onclick="goCart()" href="javascript:void(0);" value="">单独购买</a>
+                <form action="/cart/" method="post">
+                    {% csrf_token %}
+                    <input name="colorid" hidden>
+                    <input name="goodsid" hidden>
+                    <input name="sizeid" hidden>
+                    <input name="count" hidden>
+                    <button class="male" onclick="goCart()"  value="" style="cursor: pointer">单独购买</button>
+                </form>
             </div>
          <div class="detail-con-nav">
         <ul class="detail-nav">
@@ -112,21 +119,24 @@
         <img style="position: relative;left: -10px;top: 10px" src="{% static 'style/img/recommend.png' %}">
 
         <div class="goods-content">
+            {% for r_goods in recomment_goods %}
 
                 <div class="good">
-                    <a href="http://127.0.0.1:8000/details?goodsId=5">
-                        <img width="285" height="285" src="">
-                        <p class="name">中长款双面呢毛呢外套</p>
+                    <a href="/goods/?goodid={{ r_goods.id }}">
+                        <img width="285" height="285" src="{{ MEDIA_URL }}{{ r_goods.img }}">
+                        <p class="name">{{ r_goods.gname }}</p>
                         <div class="price">
                             <i>￥</i>
-                            <p class="big">33.00</p>
-                            <s>￥256.00</s>
+                            <p class="big">{{ r_goods.gprice }}</p>
+                            <s>￥{{ r_goods.goldprice }}</s>
                         </div>
                         <div class="sale">
                             特卖
                         </div>
                     </a>
                 </div>
+            {% endfor %}
+
 
 
 
@@ -136,12 +146,7 @@
 {% endblock %}
 {% block js %}
     <script>
-        $(window).load(function () {
-             $('.MinImg').siblings().removeClass('active');
-            $('.MinImg:first').addClass('active');
-             var src = $('.MinImg').getElementsByTagName('img')[0].src;
-            $('.detail-con-left>img').attr('src', src);
-        });
+
         $('.MinImg').click(function () {
             $(this).siblings().removeClass('active');
             $(this).addClass('active');
@@ -186,11 +191,43 @@
         });
 
         function goCart() {
-            $('.male').attr('target', '_blank')
-            $('.male').attr('href', '/cart/?goodsId=' + $('.detail-body').attr('goodsId') + '&colorId=' + $('.MinImgList .active').attr('colorId') + '&sizeId=' + $('.size-list .active').attr('sizeId') + '&count=' + $('.num input').val())
-            setTimeout(function () {
-                $('.male').attr('href', 'javascript:void(0);')
-            }, 10)
+            $('form').children('input[name="colorid"]').val($('.MinImg.active').attr('colorid'))
+            $('form').children('input[name="goodsid"]').val({{ goods.id }})
+            $('form').children('input[name="sizeid"]').val($('.size-item.active').attr('sizeid'))
+            $('form').children('input[name="count"]').val($('.num').children('input[type="number"]').val())
         }
     </script>
 {% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
