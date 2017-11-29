@@ -15,8 +15,17 @@ Including another URLconf
 """
 from django.conf.urls import url,include
 from django.contrib import admin
+from jiukuaijiy import settings
+from django.views.static import serve
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^',include('mallproject.urls'))
+    url(r'^',include('mallproject.urls')),
+    url(r'^cart/',include('cart.urls')),
+    url(r'^user/',include('user.urls')),
+    url(r'^order/',include('order.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns.append(url(r'^media/(?P<path>.*)$',serve,kwargs={'document_root':settings.MEDIA_ROOT}))
+

@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block js %}<script src="{% static 'js/md5-min.js' %}"></script>{% endblock js %}
+{% block content %}
+    <div class="login-body">
+        <div class="login-card">
+            <div class="login-top">
+                <h3>老用户登录</h3>
+                <h5>尊敬的用户，欢迎您回来！</h5>
+                <h4>还没账号？ <a href="/user/register/">立即去注册</a></h4>
+            </div>
+            <div class="login-bottom">
+                <div class="login-input-box">
+                    <form action="/user/logincontol/" method="post">
+                        {% csrf_token %}
+                    <input type="text" name="account" class="login-admin active" placeholder="邮箱登录">
+                    <input type="password" name="password" class="login-password">
+                        <input type="text" name="time" hidden>
+                        {% if usererror != "" %}
+                            <span class="errorinfo">{{ usererror }}</span>
+                        {% endif %}
+                    <button class="login-btn" style="color: white;text-decoration: none;cursor: pointer" onclick="login()">登录</button>
+                    </form>
+                </div>
+                <div class="login-img">
+                    <img src="{% static 'img/login_05.png' %}" alt="">
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+{% block javascript %}
+    <script>
+        $('.login-input-box>input').change(function () {
+            $(this).addClass('active')
+        })
+       function login() {
+           var password = $('input[name="password"]').val()
+           var md5_password1 = hex_md5(password)
+           var time1 = new Date().getTime()
+           $('input[name="time"]').val(time1)
+           md5_password1 = hex_md5(md5_password1 + time1)
+           $('input[name="password"]').val(md5_password1)
+       }
+
+
+
+
+
+    </script>
+{% endblock javascript %}

@@ -36,10 +36,35 @@ class ShopGoods(models.Model):
     gprice = models.DecimalField(max_digits=10, decimal_places=2)
     goldprice = models.DecimalField(max_digits=10, decimal_places=2)
     categoryid = models.ForeignKey(ShopCategory, models.DO_NOTHING, db_column='categoryId_id')  # Field name made lowercase.
-
+    #获取一张图片用于展示
     def img(self):
         #获取第一张图片
         return self.shopstore_set.first().color.value
+    # 商品详情
+    def get_deatils(self):
+        goodsdetails=self.shopgoodsdetails_set.all ()
+        details=[]
+        for i in goodsdetails:
+            details.append (i.value)
+        return details
+    #获得该商品所有颜色
+    def get_color(self):
+        store=self.shopstore_set.all ()
+        colors = []
+        for color in store:
+            colors.append({"color_id":color.color.id,"color_value":color.color.value})
+        return colors
+    #获得该商品所有尺码
+    def get_size(self):
+        store = self.shopstore_set.all()
+        sizes = []
+        for size in store:
+            size_1 = size.shopstoresize_set.all()
+            for i in size_1:
+                temp = {'id':i.size.id,'size_name':i.size.value}
+                if temp not in sizes:
+                    sizes.append({'id':i.size.id,'size_name':i.size.value})
+        return sizes
     def __str__(self):
         return r"%s"%self.gname
     class Meta:
@@ -77,6 +102,7 @@ class ShopOrder(models.Model):
 class ShopSize(models.Model):
     value = models.CharField(max_length=255)
     name = models.CharField(max_length=20)
+
     def __str__(self):
         return u'%s'%self.name
     class Meta:
@@ -101,7 +127,7 @@ class ShopStoreSize(models.Model):
     store = models.ForeignKey(ShopStore, models.DO_NOTHING)
     size = models.ForeignKey(ShopSize, models.DO_NOTHING)
     def __str__(self):
-        return u'%s'%self.store
+        return u'%s'%self.id
     class Meta:
         managed = False
         db_table = 'shop_store_size'
@@ -114,7 +140,16 @@ class ShopUser(models.Model):
     password = models.CharField(max_length=255)
     def __str__(self):
         return u'%s'%self.user
+
     class Meta:
         managed = False
         db_table = 'shop_user'
         verbose_name = '用户表'
+
+#用户商品表
+class UserGoods(models.Model):
+    goodsid = models.IntegerField()
+    colorid = models.IntegerField()
+    sizeid = models.IntegerField()
+    count = models.IntegerField()
+    user = models.ForeignKey(ShopUser)

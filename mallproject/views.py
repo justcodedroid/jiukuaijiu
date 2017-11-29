@@ -3,76 +3,66 @@ from django.views import View
 from mallproject.models import *
 from django.core.paginator import Paginator
 # Create your views here.
-#商城基类
-class MallBase (View):
-    #访问的页面
-    template = None
-    context = {}
-    #上下文
-    def get_context (self,request,*args,**kwargs):
-        return self.context
-    def get(self,request,*args,**kwargs):
-        return render(request,self.template,self.get_context(request))
-    def post(self,request,*args,**kwargs):
-        return render (request,self.template,self.get_context(request))
-#用于分页
-class Multi_object_return(MallBase):
-    def page(self,object,num='1',per_page=12):
-        '''
-            :param object:  
-            :param num: 
-            :param per_page: 
-            :return:             
-            object:传入一个要查询的对象集合
-            num:要查询的第一页内容 默认为第一页
-            per_page:每一页显示的内容数 默认为12
-        '''''
-        num = int(num)
-        paginator = Paginator(object,per_page=per_page)
-        page = paginator.page(num)
+from tools.pagingutils import MultiObjectReturned
+from view.views import BaseView
 
-        #判断是否越界
-        if num <1:
-            num = 1
-        elif num >paginator.num_pages:
-            num = paginator.num_pages
+#商城类
+class GoodsListView(BaseView,MultiObjectReturned):
+    #所有不变的东西抽象到类成员中
+    template_name = 'index.html'
+    object_name = 'goods'
+    category_objects = ShopCategory.objects.order_by('id').all()
+    #初始化
+    def prepare(self,request):
+        #类别ID
+        category_id = int(request.GET.get('category',1))
+        self.objects = ShopCategory.objects.get(id=category_id).shopgoods_set.all()
+        self.category_id = category_id
 
-        left = 2
-        right = 2
+    def get_extra_context(self,request):
+        page_num = request.GET.get('page',1)
+        context = {'title':'商城','category_id':self.category_id,'categorys':self.category_objects}
+        context.update(self.get_page(page_num))
+        return context
 
-        if num <=left:
-            start = 1            #起始1
-            end = left+right+1   #结束5
-        if num >left:
-            start = num-left
-            end = num+right
+#详情类
+class DetailsView (BaseView):
+    template_name = 'details.html'
+    def Cookies(self,request,*args,**kwargs):
+        goods_id_list = eval(request.COOKIES.get('history','[]'))
+        goods_history = []   #局部列表 用于替换 全局变量的值
+        for goods_id in goods_id_list:
+            goods = ShopGoods.objects.get(id=goods_id)
+            if goods_id != int(request.GET.get('goodsId')):
+                goods_history.append({
+                    'goods_id':goods_id,
+                    'goods_img':goods.img(),
+                    'goods_name':goods.gname,
+                    'goods_price':goods.gprice,
+                    'goods_goldprice':goods.goldprice
+                })
+        goods_history.reverse()  #最新浏览的商品最前面
+        self.goods_history = goods_history
+    def set_Cookies(self,response,*args,**kwargs):
+        #category_id,goods_img,goods_name,goods_price,goods_goldprice
+        goods_id = int(self.request.GET.get('goodsId'))
+        self.history = eval(self.request.COOKIES.get('history','[]'))
+        if goods_id not in self.history:
+            self.history.append(int(goods_id))
+        if len (self.history) > 5:
+            self.history.pop(0)
+            self.goods_history.pop()
+        response.set_cookie('history',self.history)
 
-        if end > paginator.num_pages:
-            min1 = end-paginator.num_pages
-            end = paginator.num_pages
-            start -= min1
-            if start<1:
-                start = 1
-            self.context['page'] = page
-            self.context['range'] = range(start,end+1)
-        return self.context
-
-
-
-class Mall_view (Multi_object_return):
-    template = 'index.html'
-    #显示商城类别
-    def show_navigation(self,request):
-        return ShopCategory.objects.order_by('id').all()
-    #显示商品
-    def show_goods(self,request,category):
-        return ShopCategory.objects.get(id = category).shopgoods_set.order_by('id').all()
-    #重写父类方法
-    def get_context(self,request,*args,**kwargs):
-        #获得类别
-        category=request.GET.get ('category',1)
-        self.context['category_id'] = int(category)
-        self.context['category'] = self.show_navigation(request)
-        self.context['goods'] = self.show_goods(request,category)
-
-        return self.page(self.context['goods'],per_page=1)
+    def get_extra_context(self,request):
+        #商品ID
+        goods_id = int(request.GET.get('goodsId'))
+        # 商品详情
+        goods=ShopGoods.objects.get (id=goods_id)
+        #获得该商品类别id及名称
+        category_id=goods.categoryid.id
+        category_name = goods.categoryid.cname
+        #默认库存数
+        count = goods.shopstore_set.all()[0].count
+        context = {'title':'详情','goods':goods,'category_id':category_id,'category_name':category_name,'count':count,'goods_history':self.goods_history[:4]}
+        return context

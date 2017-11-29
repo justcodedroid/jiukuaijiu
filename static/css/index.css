@@ -316,3 +316,6 @@ a {
     background-color:#ff464e;
     text-align:center;
 }
+.user-hidden{
+    display: none;
+}

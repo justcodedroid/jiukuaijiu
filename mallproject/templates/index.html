@@ -4,11 +4,11 @@
     <!--类别部分-->
     <div class="classes">
         <ul class="classes-items">
-            {% for foo in category %}
+            {% for foo in categorys %}
                 {% if foo.id == category_id %}
-                    <li class="items active "><a href="http://127.0.0.1:8000/?category={{ foo.id }}">{{ foo }}</a></li>
+                    <li class="items active "><a href="/?category={{ foo.id }}">{{ foo }}</a></li>
                     {% else %}
-                    <li class="items  "><a href="http://127.0.0.1:8000/?category={{ foo.id }}">{{ foo }}</a></li>
+                    <li class="items  "><a href="/?category={{ foo.id }}">{{ foo }}</a></li>
                 {% endif %}
 
             {% endfor %}
@@ -20,8 +20,8 @@
                 {% for good in goods %}
 
                     <div class="good">
-                    <a href="/details?goodsId=26">
-                        <img src="{% static 'media/'%}{{ good.img }}" width="285px" height="285px">
+                    <a href="/details?goodsId={{ good.id }}">
+                        <img src="{{ MEDIA_URL }}{{ good.img }}" width="285px" height="285px">
                         <p class="name">{{ good.gname }}</p>
                         <div class="price">
                             <i>￥</i>
@@ -40,7 +40,7 @@
     <div id="pager" style="text-align: center; font-size: 16px; overflow: hidden;">
 
         {% if page.has_previous %}
-            <a href="http://127.0.0.1:8000/?category={{ category_id }}&amp;page={{ page.previous_page_number }}" style="display: inline-block; padding: 5px; margin: 5px;">下一页</a>
+            <a href="http://127.0.0.1:8000/?category={{ category_id }}&amp;page={{ page.previous_page_number }}" style="display: inline-block; padding: 5px; margin: 5px;">上一页</a>
         {% endif %}
         {% if page.has_next %}
          <a href="http://127.0.0.1:8000/?category={{ category_id }}&amp;page={{ page.next_page_number }}" style="display: inline-block; padding: 5px; margin: 5px;">下一页</a>
@@ -49,3 +49,10 @@
 
     </div>
 {% endblock content %}
+{% block javascript %}
+    <script>
+    $('#pager').css({'text-align':'center','font-size':'16px','overflow':'hidden'})
+    $('#pager a').css({'display':'inline-block','padding':'5px','margin':'5px'})
+
+    </script>
+{% endblock javascript %}

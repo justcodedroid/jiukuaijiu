@@ -7,8 +7,19 @@
             <li class="sub"><a href="http://127.0.0.1:8000/?category=2#">商家中心</a></li>
             <li class="sub"><a href="http://127.0.0.1:8000/?category=2#">客户服务</a></li>
         </ul>
-        <div class="register"><a href="http://127.0.0.1:8000/?category=2#">免费注册</a></div>
-        <div class="sign"><a href="http://127.0.0.1:8000/login/">登录</a></div>
+        {% if user == '' %}
+             <div>
+                <div class="register"><a href="/user/register">免费注册</a></div>
+                <div class="sign"><a href="/user/login/">登录</a></div>
+            </div>
+            {% else %}
+            <div>
+                <div class="sign"><a href="/user/exit/">退出登陆</a></div>
+                <div class="sign"><a href="/user/admin/">{{ user }}</a></div>
+            </div>
+        {% endif %}
+
+
     </div>
 </div>
 <!--搜索-->
